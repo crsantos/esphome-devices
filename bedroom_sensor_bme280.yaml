@@ -1,0 +1,87 @@
+esphome:
+  name: bedroom_sensor_bme280
+  platform: ESP8266
+  board: d1_mini
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_pwd
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Bme280 Fallback Hotspot"
+    password: "5HfgEQHF9Dg4"
+
+captive_portal:
+
+# Enable logging
+logger:
+  level: debug
+
+status_led:
+  pin:
+    number: GPIO2
+    inverted: yes
+
+i2c:
+  - id: bus_bme280
+    sda: D2 # 4
+    scl: D1 # 5
+    scan: true
+
+sensor:
+  - platform: bme280
+    i2c_id: bus_bme280
+    temperature:
+      name: temperature
+      oversampling: 1x
+      filters:
+        - or:
+          - heartbeat: 900s
+          - delta: 0.25
+    pressure:
+      name: pressure
+      oversampling: 1x
+      filters:
+        - or:
+          - heartbeat: 900s
+          - delta: 0.35
+    humidity:
+      name: humidity
+      oversampling: 1x
+      filters:
+        - or:
+          - heartbeat: 900s
+          - delta: 0.25
+    address: 0x76
+    update_interval: 60s
+  - platform: wifi_signal
+    name: "Bedroom BME280 WiFi Signal"
+    update_interval: 900s
+
+deep_sleep:
+  id: deep_sleep_1
+  run_duration: 30s
+  sleep_duration: 2min
+
+# Enable Home Assistant API
+api:
+
+# web_server:
+#   port: 80
+
+ota:
+  safe_mode: True
+  password: !secret ota_pwd
+
+mqtt:
+  broker: !secret mqtt_broker_ip
+  username: !secret mqtt_broker_username
+  password: !secret mqtt_broker_pwd
+  discovery: false
+  birth_message:
+    topic: bedroom_sensor_bme280/birth
+    payload: online
+  will_message:
+    topic: bedroom_sensor_bme280/LWT
+    payload: offline
