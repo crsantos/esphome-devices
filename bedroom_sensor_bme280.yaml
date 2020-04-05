@@ -6,6 +6,8 @@ esphome:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_pwd
+  fast_connect: true
+  # power_save_mode: HIGH
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
@@ -25,8 +27,8 @@ status_led:
 
 i2c:
   - id: bus_bme280
-    sda: D2 # 4
-    scl: D1 # 5
+    sda: D2 # or GPIO4
+    scl: D1 # or GPIO5
     scan: true
 
 sensor:
@@ -54,15 +56,15 @@ sensor:
           - heartbeat: 900s
           - delta: 0.25
     address: 0x76
-    update_interval: 60s
+    update_interval: 30s
   - platform: wifi_signal
     name: "Bedroom BME280 WiFi Signal"
     update_interval: 900s
 
 deep_sleep:
-  id: deep_sleep_1
+  id: deep_sleep_bedroom_sensor_bme280
   run_duration: 30s
-  sleep_duration: 2min
+  sleep_duration: 5min
 
 # Enable Home Assistant API
 api:
@@ -71,7 +73,7 @@ api:
 #   port: 80
 
 ota:
-  safe_mode: True
+  id: bedroom_sensor_bme280_ota
   password: !secret ota_pwd
 
 mqtt:
@@ -85,3 +87,8 @@ mqtt:
   will_message:
     topic: bedroom_sensor_bme280/LWT
     payload: offline
+  on_message:
+    topic: bedroom_sensor_bme280/ota_mode
+    payload: 'ON'
+    then:
+      - deep_sleep.prevent: deep_sleep_bedroom_sensor_bme280
