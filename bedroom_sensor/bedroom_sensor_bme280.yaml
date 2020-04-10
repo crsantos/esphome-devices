@@ -81,6 +81,10 @@ mqtt:
   username: !secret mqtt_broker_username
   password: !secret mqtt_broker_pwd
   discovery: false
+  # availability:
+  #   topic: bedroom_sensor_bme280/status
+  #   payload_available: online
+  #   payload_not_available: offline
   birth_message:
     topic: bedroom_sensor_bme280/birth
     payload: online
