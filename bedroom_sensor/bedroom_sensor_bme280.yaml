@@ -61,13 +61,13 @@ sensor:
           - delta: 0.25
     address: 0x76
     update_interval: 30s
-    # availability:
-    #   topic: '$mqtt_topic_prefix/status'
-    #   payload_available: 'online'
-    #   payload_not_available: 'offline'
   - platform: wifi_signal
-    name: "Bedroom BME280 WiFi Signal"
+    name: 'wifi_signal'
     update_interval: 900s
+    availability:
+      topic: '$mqtt_topic_prefix/status'
+      payload_available: 'online'
+      payload_not_available: 'offline'
 
 deep_sleep:
   id: deep_sleep_bedroom_sensor_bme280
