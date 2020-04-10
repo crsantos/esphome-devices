@@ -3,6 +3,9 @@ esphome:
   platform: ESP8266
   board: d1_mini
 
+substitutions:
+  mqtt_topic_prefix: 'bedroom_sensor_pir'
+
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_pwd
@@ -52,8 +55,8 @@ mqtt:
   password: !secret mqtt_broker_pwd
   discovery: false
   birth_message:
-    topic: bedroom_sensor_pir/birth
+    topic: $mqtt_topic_prefix/birth
     payload: online
   will_message:
-    topic: bedroom_sensor_pir/LWT
+    topic: $mqtt_topic_prefix/LWT
     payload: offline

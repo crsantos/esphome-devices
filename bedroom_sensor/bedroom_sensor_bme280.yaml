@@ -3,6 +3,10 @@ esphome:
   platform: ESP8266
   board: d1_mini
 
+substitutions:
+  mqtt_topic_prefix: 'bedroom_sensor_bme280'
+  
+
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_pwd
@@ -57,6 +61,10 @@ sensor:
           - delta: 0.25
     address: 0x76
     update_interval: 30s
+    # availability:
+    #   topic: '$mqtt_topic_prefix/status'
+    #   payload_available: 'online'
+    #   payload_not_available: 'offline'
   - platform: wifi_signal
     name: "Bedroom BME280 WiFi Signal"
     update_interval: 900s
@@ -81,18 +89,14 @@ mqtt:
   username: !secret mqtt_broker_username
   password: !secret mqtt_broker_pwd
   discovery: false
-  # availability:
-  #   topic: bedroom_sensor_bme280/status
-  #   payload_available: online
-  #   payload_not_available: offline
   birth_message:
-    topic: bedroom_sensor_bme280/birth
+    topic: $mqtt_topic_prefix/birth
     payload: online
   will_message:
-    topic: bedroom_sensor_bme280/LWT
+    topic: $mqtt_topic_prefix/LWT
     payload: offline
   on_message:
-    topic: bedroom_sensor_bme280/ota_mode
+    topic: $mqtt_topic_prefix/ota_mode
     payload: 'ON'
     then:
       - deep_sleep.prevent: deep_sleep_bedroom_sensor_bme280
