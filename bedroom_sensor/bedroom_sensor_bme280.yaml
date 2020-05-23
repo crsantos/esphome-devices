@@ -5,6 +5,9 @@ esphome:
 
 substitutions:
   mqtt_topic_prefix: 'bedroom_sensor_bme280'
+  widget_title: "crsantos"
+  font_name_bold: 'RobotoMono-Bold.ttf'
+  font_name: 'RobotoMono-Regular.ttf'
   
 
 wifi:
@@ -40,6 +43,7 @@ sensor:
     i2c_id: bus_bme280
     temperature:
       name: temperature
+      id: temperature
       oversampling: 1x
       filters:
         - or:
@@ -47,6 +51,7 @@ sensor:
           - delta: 0.25
     pressure:
       name: pressure
+      id: pressure
       oversampling: 1x
       filters:
         - or:
@@ -54,6 +59,7 @@ sensor:
           - delta: 0.35
     humidity:
       name: humidity
+      id: humidity
       oversampling: 1x
       filters:
         - or:
@@ -63,16 +69,68 @@ sensor:
     update_interval: 30s
   - platform: wifi_signal
     name: 'wifi_signal'
+    id: wifi_sensor
     update_interval: 900s
     availability:
       topic: '$mqtt_topic_prefix/status'
       payload_available: 'online'
       payload_not_available: 'offline'
 
-deep_sleep:
-  id: deep_sleep_bedroom_sensor_bme280
-  run_duration: 30s
-  sleep_duration: 5min
+interval:
+  - interval: 5s
+    then:
+      - display.page.show_next: ssd1306
+      - component.update: ssd1306
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: "Europe/Lisbon"
+
+display:
+  - platform: ssd1306_i2c
+    i2c_id: bus_bme280
+    model: "SSD1306 128x64"
+    reset_pin: D0
+    id: ssd1306
+    address: 0x3C
+    pages:
+      - id: page1
+        lambda: |-
+          it.printf(64, 0, id(font_andale_small), TextAlign::TOP_CENTER, $widget_title);
+          
+          if (id(wifi_sensor).has_state()) {
+            it.printf(0, 20, id(font_andale_big), TextAlign::TOP_LEFT, "%.0f", id(wifi_sensor).state);
+          }
+
+          if (id(temperature).has_state()) {
+            it.printf(0, 60, id(font_andale_big), TextAlign::BASELINE_LEFT, "%.1f°", id(temperature).state);
+          }
+          if (id(pressure).has_state()) {
+            it.printf(127, 20, id(font_andale_big), TextAlign::TOP_RIGHT , "%.1f", id(pressure).state);
+          }
+          if (id(humidity).has_state()) {
+            it.printf(127, 60, id(font_andale_big), TextAlign::BASELINE_RIGHT , "%.1f°", id(humidity).state);
+          }
+      - id: page2
+        lambda: |-
+          it.printf(64, 0, id(font_andale_small), TextAlign::TOP_CENTER, $widget_title);
+          it.strftime(64, 28, id(font_andale_huge), TextAlign::TOP_CENTER, "%H:%M", id(sntp_time).now());
+
+font:
+  - file: $font_name_bold
+    id: font_andale_small
+    size: 12
+  - file: $font_name
+    id: font_andale_big
+    size: 18
+  - file: $font_name
+    id: font_andale_huge
+    size: 34
+
+# deep_sleep:
+#   id: deep_sleep_bedroom_sensor_bme280
+#   run_duration: 30s
+#   sleep_duration: 5min
 
 # Enable Home Assistant API
 api:
@@ -95,8 +153,8 @@ mqtt:
   will_message:
     topic: $mqtt_topic_prefix/LWT
     payload: offline
-  on_message:
-    topic: $mqtt_topic_prefix/ota_mode
-    payload: 'ON'
-    then:
-      - deep_sleep.prevent: deep_sleep_bedroom_sensor_bme280
+  # on_message:
+  #   topic: $mqtt_topic_prefix/ota_mode
+  #   payload: 'ON'
+  #   then:
+  #     - deep_sleep.prevent: deep_sleep_bedroom_sensor_bme280
