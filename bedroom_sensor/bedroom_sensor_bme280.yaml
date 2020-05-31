@@ -85,7 +85,7 @@ sensor:
       payload_not_available: 'offline'
 
 interval:
-  - interval: 5s
+  - interval: 10s
     then:
       - display.page.show_next: ssd1306
       - component.update: ssd1306
@@ -135,6 +135,11 @@ display:
         lambda: |-
           it.printf(64, 0, id(font_roboto_small), TextAlign::TOP_CENTER, "$widget_title");
           it.strftime(64, 38, id(font_roboto_huge), TextAlign::CENTER, "%H:%M", id(sntp_time).now());
+
+      - id: page3
+        lambda: |-
+          // Turn the whole display off.
+          it.fill(COLOR_OFF);
 
 font:
   - file: $font_name_bold
