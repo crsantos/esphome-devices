@@ -2,19 +2,27 @@ esphome:
   name: bedroom_sensor_bme280
   platform: ESP8266
   board: d1_mini
+  # on_boot:
+  #   priority: -10
+  #   then:
+  #     - delay: 44s # Avoids sleeping on Clock page - showing an outdated time
+  #     - component.update: ssd1306
+  #     - display.page.show: page1
 
 substitutions:
   mqtt_topic_prefix: 'bedroom_sensor_bme280'
   widget_title: "crsantos"
   font_name_bold: 'RobotoMono-Bold.ttf'
   font_name: 'RobotoMono-Regular.ttf'
+  top_line_yy: "35"
+  bottom_line_yy: "40"
   
 
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_pwd
   fast_connect: true
-  # power_save_mode: HIGH
+  power_save_mode: HIGH
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
@@ -25,12 +33,12 @@ captive_portal:
 
 # Enable logging
 logger:
-  level: debug
+  level: info
 
-status_led:
-  pin:
-    number: GPIO2
-    inverted: yes
+# status_led:
+#   pin:
+#     number: GPIO2
+#     inverted: yes
 
 i2c:
   - id: bus_bme280
@@ -96,41 +104,53 @@ display:
     pages:
       - id: page1
         lambda: |-
-          it.printf(64, 0, id(font_andale_small), TextAlign::TOP_CENTER, $widget_title);
+
+          // - Header
+          it.printf(64, 0, id(font_roboto_small), TextAlign::TOP_CENTER, "$widget_title");
           
-          if (id(wifi_sensor).has_state()) {
-            it.printf(0, 20, id(font_andale_big), TextAlign::TOP_LEFT, "%.0f", id(wifi_sensor).state);
+          // - Top
+          // 0,top_line_yy
+          if (id(temperature).has_state()) {
+            it.printf(0, $top_line_yy, id(font_roboto_big), TextAlign::BASELINE_LEFT, "%.1f°", id(temperature).state);
           }
 
-          if (id(temperature).has_state()) {
-            it.printf(0, 60, id(font_andale_big), TextAlign::BASELINE_LEFT, "%.1f°", id(temperature).state);
-          }
-          if (id(pressure).has_state()) {
-            it.printf(127, 20, id(font_andale_big), TextAlign::TOP_RIGHT , "%.1f", id(pressure).state);
-          }
+          // 127,top_line_yy
           if (id(humidity).has_state()) {
-            it.printf(127, 60, id(font_andale_big), TextAlign::BASELINE_RIGHT , "%.1f°", id(humidity).state);
+            it.printf(127, $top_line_yy, id(font_roboto_big), TextAlign::BASELINE_RIGHT , "%.1f%%", id(humidity).state);
           }
+
+          // - Bottom
+
+          // 0,bottom_line_yy
+          if (id(wifi_sensor).has_state()) {
+            it.printf(0, $bottom_line_yy, id(font_roboto_big), TextAlign::TOP_LEFT, "%.0f", id(wifi_sensor).state);
+          }
+          
+          // 127,bottom_line_yy
+          if (id(pressure).has_state()) {
+            it.printf(127, $bottom_line_yy, id(font_roboto_big), TextAlign::TOP_RIGHT , "%.1fhP", id(pressure).state);
+          }
+
       - id: page2
         lambda: |-
-          it.printf(64, 0, id(font_andale_small), TextAlign::TOP_CENTER, $widget_title);
-          it.strftime(64, 28, id(font_andale_huge), TextAlign::TOP_CENTER, "%H:%M", id(sntp_time).now());
+          it.printf(64, 0, id(font_roboto_small), TextAlign::TOP_CENTER, "$widget_title");
+          it.strftime(64, 38, id(font_roboto_huge), TextAlign::CENTER, "%H:%M", id(sntp_time).now());
 
 font:
   - file: $font_name_bold
-    id: font_andale_small
+    id: font_roboto_small
     size: 12
   - file: $font_name
-    id: font_andale_big
+    id: font_roboto_big
     size: 18
   - file: $font_name
-    id: font_andale_huge
-    size: 34
+    id: font_roboto_huge
+    size: 36
 
 # deep_sleep:
 #   id: deep_sleep_bedroom_sensor_bme280
-#   run_duration: 30s
-#   sleep_duration: 5min
+#   run_duration: 45s
+#   sleep_duration: 1min
 
 # Enable Home Assistant API
 api:
