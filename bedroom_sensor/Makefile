@@ -10,7 +10,7 @@ clean:
 	esphome ${YAML_PATH} clean
 
 upload:
-	${PIO_PATH} run -d ${GENERATED_CODE_PATH}
+	${PIO_PATH} run --target upload -d ${GENERATED_CODE_PATH}
 
 all: clean	compile	upload
 
