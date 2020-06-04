@@ -1,0 +1,72 @@
+esphome:
+  name: irblaster
+  platform: ESP8266
+  board: d1_mini
+  # on_boot:
+  #   priority: -10
+  #   then:
+
+substitutions:
+  mqtt_topic_prefix: 'irblaster'
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_pwd
+  fast_connect: true
+  # power_save_mode: HIGH
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Irblaster Fallback Hotspot"
+    password: "ZQl6FhUr2xuu"
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: !secret ota_pwd
+
+ota:
+  id: irblaster_ota
+  password: !secret ota_pwd
+
+mqtt:
+  broker: !secret mqtt_broker_ip
+  username: !secret mqtt_broker_username
+  password: !secret mqtt_broker_pwd
+  discovery: false
+  birth_message:
+    topic: $mqtt_topic_prefix/birth
+    payload: online
+  will_message:
+    topic: $mqtt_topic_prefix/LWT
+    payload: offline
+  on_message:
+    topic: irblaster/samsung/turnon
+    qos: 0
+    then:
+      #- switch.turn_on: some_switch
+      - remote_transmitter.transmit_samsung:
+          data: 0x1FEF05E4
+
+# IR config
+remote_transmitter:
+  pin: D3
+  carrier_duty_percent: 50%
+
+remote_receiver:
+  pin: D4
+  dump: all
+
+
+# Devices
+# Individual switches
+switch:
+  - platform: template
+    name: Samsung TV
+    turn_on_action:
+      - remote_transmitter.transmit_samsung:
+          data: 0x1FEF05E4 #0xE0E040BF
