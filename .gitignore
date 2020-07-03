@@ -9,4 +9,4 @@
 **/platformio.ini
 /secrets.yaml
 **/.pio/
-
+/.vscode/
