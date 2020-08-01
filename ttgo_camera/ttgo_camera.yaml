@@ -4,16 +4,33 @@ esphome:
   board: esp32dev
 
 substitutions:
-  mqtt_topic_prefix: 'bedroom_sensor_bme280'
+  devicename: "ttgocamera"
+  mqtt_topic_prefix: 'ttgocamera'
   widget_title: "crsantos"
-  font_name_bold: 'RobotoMono-Bold.ttf'
-  font_name: 'RobotoMono-Regular.ttf'
-  top_line_yy: "35"
-  bottom_line_yy: "40"
-  
+  font_name: 'fonts/RobotoMono-Regular.ttf'
+  font_offset: "64"
+
+mqtt:
+  broker: !secret mqtt_broker_ip
+  username: !secret mqtt_broker_username
+  password: !secret mqtt_broker_pwd
+  discovery: false
+  birth_message:
+    topic: $mqtt_topic_prefix/birth
+    payload: online
+  will_message:
+    topic: $mqtt_topic_prefix/LWT
+    payload: offline
+
+font:
+  - file: $font_name
+    id: robotomono
+    size: 20
+
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_pwd
+  use_address: "${$devicename}.local"
   fast_connect: true
   power_save_mode: HIGH
 
@@ -21,6 +38,29 @@ wifi:
   ap:
     ssid: "Ttgocamera Fallback Hotspot"
     password: "Pk4LATSBubej"
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: ESP IP Address
+    ssid:
+      name: ESP Connected SSID
+    bssid:
+      name: ESP Connected BSSID
+
+  - platform: template
+    id: macaddress
+    name: "${devicename}_MAC_Address"
+    lambda: 'return {WiFi.macAddress().c_str()};'
+    icon: mdi:fingerprint
+    update_interval: 1d 
+    
+  - platform: template
+    id: ipaddress
+    name: "IP Address"
+    lambda: 'return {WiFi.localIP().toString().c_str()};'
+    icon: mdi:fingerprint
+    update_interval: 1d
 
 captive_portal:
 
@@ -32,3 +72,83 @@ logger:
 #   pin:
 #     number: GPIO2
 #     inverted: yes
+
+i2c:
+  sda: 21
+  scl: 22
+
+binary_sensor:
+  - platform: gpio
+    pin: 33
+    name: "TTGO PIR Sensor"
+    device_class: motion
+    
+  - platform: gpio
+    pin:
+      number: 34
+      mode: INPUT_PULLUP
+      inverted: True
+    name: "TTGO Button"
+    on_press:
+      then:
+        - display.page.show: page1
+
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+
+display:
+  - platform: ssd1306_i2c
+    id: ssd1306_display
+    model: "SSD1306 128x64"
+    rotation: 180°
+    address: 0x3C
+    pages:
+      - id: page1
+        lambda: |-
+          it.strftime($font_offset, 0, id(robotomono), TextAlign::TOP_CENTER,"%d-%m-%Y", id(homeassistant_time).now());
+          it.strftime($font_offset, $font_offset, id(robotomono), TextAlign::BASELINE_CENTER, "%H:%M", id(homeassistant_time).now());
+      - id: page2
+        lambda: |-
+          if (id(ipaddress).has_state()) {
+            it.printf(0, 0, id(robotomono), TextAlign::TOP_LEFT, "%s", id(ipaddress).state.c_str());
+          } else {
+            it.printf(0, 0, id(robotomono), TextAlign::TOP_LEFT, "No IP");
+          }
+          if (id(macaddress).has_state()) {
+            it.printf(0, $font_offset, id(robotomono), TextAlign::TOP_LEFT, "%s", id(macaddress).state.c_str());
+          } else {
+            it.printf(0, $font_offset, id(robotomono), TextAlign::TOP_LEFT, "No MAC address");
+          }
+
+interval:
+  - interval: 10s
+    then:
+      - display.page.show_next: ssd1306_display
+      - component.update: ssd1306_display
+api:
+
+esp32_camera:
+  name: TTGO Camera
+  external_clock:
+    pin: 32
+    frequency: 20MHz
+  i2c_pins:
+    sda: 13
+    scl: 12
+  data_pins:
+    - 5
+    - 14
+    - 4
+    - 15
+    - 18
+    - 23
+    - 36
+    - 39
+  vsync_pin: 27
+  href_pin: 25
+  pixel_clock_pin: 19
+  resolution: 640x480 # Can be higher, I think, but this has a pretty good framerate
+  jpeg_quality: 10
+  vertical_flip: true
+  horizontal_mirror: false

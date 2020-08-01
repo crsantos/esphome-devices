@@ -1,6 +1,6 @@
 YAML_PATH=ttgo_camera.yaml
 PIO_PATH=~/.platformio/penv/bin/pio
-GENERATED_CODE_PATH=ttgo_camera
+GENERATED_CODE_PATH=ttgocamera
 
 # Compile ESPHome yaml into platformIO
 compile:
