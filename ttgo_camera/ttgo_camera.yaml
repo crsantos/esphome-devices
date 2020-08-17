@@ -42,23 +42,17 @@ wifi:
 text_sensor:
   - platform: wifi_info
     ip_address:
-      name: ESP IP Address
+      id: ipaddress
+      name: ipaddress
     ssid:
-      name: ESP Connected SSID
+      id: ssid
+      name: ssid
     bssid:
       name: ESP Connected BSSID
-
   - platform: template
     id: macaddress
-    name: "${devicename}_MAC_Address"
+    name: macaddress"
     lambda: 'return {WiFi.macAddress().c_str()};'
-    icon: mdi:fingerprint
-    update_interval: 1d 
-    
-  - platform: template
-    id: ipaddress
-    name: "IP Address"
-    lambda: 'return {WiFi.localIP().toString().c_str()};'
     icon: mdi:fingerprint
     update_interval: 1d
 
@@ -146,9 +140,10 @@ esp32_camera:
     - 36
     - 39
   vsync_pin: 27
+  power_down_pin: 26
   href_pin: 25
   pixel_clock_pin: 19
   resolution: 640x480 # Can be higher, I think, but this has a pretty good framerate
   jpeg_quality: 10
   vertical_flip: true
-  horizontal_mirror: false
+  horizontal_mirror: true
