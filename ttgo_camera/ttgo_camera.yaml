@@ -25,7 +25,7 @@ mqtt:
 font:
   - file: $font_name
     id: robotomono
-    size: 20
+    size: 18
 
 wifi:
   ssid: !secret wifi_ssid
@@ -51,7 +51,7 @@ text_sensor:
       name: ESP Connected BSSID
   - platform: template
     id: macaddress
-    name: macaddress"
+    name: macaddress
     lambda: 'return {WiFi.macAddress().c_str()};'
     icon: mdi:fingerprint
     update_interval: 1d
@@ -147,3 +147,4 @@ esp32_camera:
   jpeg_quality: 10
   vertical_flip: true
   horizontal_mirror: true
+  idle_framerate: 0.5 fps
