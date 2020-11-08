@@ -4,6 +4,7 @@ esphome:
   board: d1_mini
 
 substitutions:
+  devicename: 'bedroom_sensor_pir'
   mqtt_topic_prefix: 'bedroom_sensor_pir'
 
 wifi:
@@ -14,7 +15,7 @@ wifi:
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Bedroom PIR Fallback Hotspot"
+    ssid: "$devicename Fallback Hotspot"
     password: "5HfgEQHF9Dg4"
 
 captive_portal:

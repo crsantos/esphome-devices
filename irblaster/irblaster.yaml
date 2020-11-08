@@ -8,6 +8,7 @@ esphome:
 
 substitutions:
   mqtt_topic_prefix: 'irblaster'
+  devicename: 'irblaster'
 
 wifi:
   ssid: !secret wifi_ssid
@@ -17,7 +18,7 @@ wifi:
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Irblaster Fallback Hotspot"
+    ssid: "$devicename Fallback Hotspot"
     password: "ZQl6FhUr2xuu"
 
 captive_portal:
