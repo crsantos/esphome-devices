@@ -35,12 +35,12 @@ captive_portal:
 
 # Enable logging
 logger:
-  level: VERY_VERBOSE
+  level: INFO
 
 status_led:
   pin:
     number: GPIO2
-    inverted: yes
+    inverted: True
 
 api:
 
@@ -94,3 +94,21 @@ light:
               num_leds: 1
           add_led_interval: 100ms
           reverse: False
+      - addressable_twinkle:
+      - addressable_twinkle:
+          name: Twinkle Effect With Custom Values
+          twinkle_probability: 5%
+          progress_interval: 4ms
+      - addressable_scan:
+      - addressable_scan:
+          name: Scan Effect With Custom Values
+          move_interval: 100ms
+          scan_width: 1
+      - addressable_fireworks:
+      - addressable_fireworks:
+          name: Fireworks Effect With Custom Values
+          update_interval: 32ms
+          spark_probability: 10%
+          use_random_color: false
+          fade_out_rate: 120
+      - addressable_flicker:
