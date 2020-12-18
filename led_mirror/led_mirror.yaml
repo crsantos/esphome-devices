@@ -35,7 +35,7 @@ captive_portal:
 
 # Enable logging
 logger:
-  level: INFO
+  level: WARN
 
 status_led:
   pin:
