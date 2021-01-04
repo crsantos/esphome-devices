@@ -35,7 +35,10 @@ captive_portal:
 
 # Enable logging
 logger:
-  level: NONE
+  level: ERROR
+  logs:
+    mqtt.component: ERROR
+    mqtt.client: ERROR
 
 status_led:
   pin:
