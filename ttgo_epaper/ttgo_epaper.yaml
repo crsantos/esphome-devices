@@ -1,0 +1,122 @@
+esphome:
+  name: ttgoepaper
+  platform: ESP32
+  board: esp32dev
+
+# platformio_options:
+#   monitor_speed: 115200
+#   upload_speed: 460800
+
+substitutions:
+  devicename: "ttgoepaper"
+  mqtt_topic_prefix: 'ttgoepaper'
+  font_name: 'fonts/RobotoMono-Regular.ttf'
+  font_offset: "64"
+
+mqtt:
+  broker: !secret mqtt_broker_ip
+  username: !secret mqtt_broker_username
+  password: !secret mqtt_broker_pwd
+  discovery: false
+  birth_message:
+    topic: $mqtt_topic_prefix/birth
+    payload: online
+  will_message:
+    topic: $mqtt_topic_prefix/LWT
+    payload: offline
+
+font:
+  - file: $font_name
+    id: robotomono
+    size: 18
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_pwd
+  use_address: "$devicename.local"
+  fast_connect: true
+  power_save_mode: HIGH
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "ttgoepaper Fallback Hotspot"
+    password: "Pk4LATSBubej"
+
+captive_portal:
+
+api:
+
+# Enable logging
+logger:
+  level: DEBUG
+  logs:
+    mqtt.component: DEBUG
+    mqtt.client: DEBUG
+
+spi:
+  clk_pin: 18
+  mosi_pin: 23
+  #miso_pin: 17 # 2
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: 39
+      mode: INPUT_PULLUP
+      inverted: True
+    name: "ePaper Button"
+    on_press:
+      then:
+        - display.page.show: page1
+
+sensor:
+  - platform: homeassistant
+    entity_id: sensor.ffptn3850_active_camera
+    id: active_camera
+  - platform: homeassistant
+    entity_id: binary_sensor.ffptn3850_microphone_in_use
+    id: active_mic
+  - platform: adc
+    pin: 35
+    name: "Battery"
+    id: pin35
+    update_interval: 300s
+    attenuation: 11db
+    filters:
+      - sliding_window_moving_average:
+          window_size: 5
+          send_every: 5
+
+interval:
+  - interval: 30s
+    then:
+      - display.page.show_next: epaper_display
+      - component.update: epaper_display
+
+display:
+  - platform: waveshare_epaper
+    cs_pin: 5
+    dc_pin: 17 
+    busy_pin: 4
+    reset_pin: 16
+    model: 2.13in-ttgo-b73
+    update_interval: 30s
+    full_update_every: 180
+    rotation: 270°
+    id: epaper_display
+    pages:
+      - id: page1
+        lambda: |-
+          it.print(0, 0, id(robotomono), "On a call", TextAlign::TOP_LEFT);
+          if(id(active_camera).state || id(active_mic).state) {
+            it.printf(0, 42, id(robotomono), "Yes", TextAlign::TOP_LEFT);
+          } else {
+            it.printf(0, 42, id(robotomono), "No", TextAlign::TOP_LEFT);
+          }
+          #it.printf(0, 42, id(robotomono), "Camera:", TextAlign::TOP_LEFT);
+          #it.printf(55, 40, id(robotomono), "%s", id(active_camera).state.c_str(), TextAlign::TOP_RIGHT);
+          #it.printf(0, 102, id(robotomono), "Microphone:", TextAlign::TOP_LEFT);
+          #it.printf(75, 100, id(robotomono), "%s", id(active_mic).state.c_str(), TextAlign::TOP_RIGHT);
+      - id: page2
+        lambda: |-
+            it.print(0, 0, id(robotomono), "TODO: Page 2");
