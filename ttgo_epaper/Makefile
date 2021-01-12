@@ -1,5 +1,5 @@
 YAML_PATH=ttgo_epaper.yaml
-PIO_PATH=~/.platformio/penv/bin/pio
+PIO_PATH=~/.platformio/penv/bin/pio # /usr/local/bin/pio
 GENERATED_CODE_PATH=ttgoepaper
 
 # Compile ESPHome yaml into platformIO
