@@ -2,9 +2,9 @@ esphome:
   name: ttgoepaper
   platform: ESP32
   board: esp32dev
-  # platformio_options:
-  #   monitor_speed: 115200
-  #   upload_speed: 115200
+  platformio_options:
+    monitor_speed: 115200
+    upload_speed: 115200
 
 substitutions:
   devicename: "ttgoepaper"
@@ -25,11 +25,22 @@ mqtt:
 
 font:
   - file: $font_name
-    id: robotomono
+    id: robotomono_caption
     size: 18
   - file: $font_name
+    id: robotomono_subtitle
+    size: 24
+  - file: $font_name
     id: robotomono_title
-    size: 26
+    size: 30
+
+image:
+  - file: "images/video-box-off.png"
+    id: video_box_off
+    #resize: 72x72
+  - file: "images/video-box.png"
+    id: video_box
+    #resize: 72x72
 
 wifi:
   ssid: !secret wifi_ssid
@@ -72,9 +83,9 @@ binary_sensor:
       mode: INPUT_PULLUP
       inverted: True
     name: "ePaper Button"
-    on_press:
-      then:
-        - display.page.show_next: epaper_display
+    # on_press:
+    #   then:
+    #     - display.page.show_next: epaper_display
 
 sensor:
   - platform: adc
@@ -88,11 +99,11 @@ sensor:
           window_size: 5
           send_every: 5
 
-interval:
-  - interval: 30s
-    then:
-      - display.page.show_next: epaper_display
-      - component.update: epaper_display
+# interval:
+#   - interval: 30s
+#     then:
+#       - display.page.show_next: epaper_display
+#       - component.update: epaper_display
 
 display:
   - platform: waveshare_epaper
@@ -101,8 +112,8 @@ display:
     busy_pin: 4
     reset_pin: 16
     model: 2.13in-ttgo-b73
-    update_interval: 30s
-    full_update_every: 180
+    update_interval: 15s
+    full_update_every: 90
     rotation: 270°
     id: epaper_display
     pages:
@@ -110,6 +121,7 @@ display:
         lambda: |-
           // Size of screen: 250x122
           #define SCREEN_WIDTH 250
+          #define IMAGE_SIZE 96
           #define SCREEN_HEIGHT 122
           #define TOP_LINE_YY 0
           #define MIDDLE_LINE_YY 42
@@ -119,18 +131,22 @@ display:
           // Turn the whole display off.
           it.fill(COLOR_OFF);
 
-          it.line(0, 0, it.get_width(), 0);
+          // it.line(0, 0, it.get_width(), 0);
 
-          it.print(0, TOP_LINE_YY, id(robotomono_title), TextAlign::TOP_LEFT, "On a call");
+          // it.print(0, TOP_LINE_YY, id(robotomono_title), TextAlign::TOP_LEFT, "On a call");
 
           bool onCallRightNow = id(active_camera).state || id(active_mic).state;
 
-          it.printf(0, MIDDLE_LINE_YY, id(robotomono), TextAlign::TOP_LEFT, onCallRightNow ? "Yes, busy now" : "I am free");
+          esphome::display::Image *targetImage = onCallRightNow ? id(video_box) : id(video_box_off);
+          it.image(170, 30, targetImage);
 
-          it.printf(0, BOTTOM_LINE_YY, id(robotomono), TextAlign::TOP_LEFT, "Camera: %d, Mic: %d", id(active_camera).state, id(active_mic).state);
-      - id: page2
-        lambda: |-
-            it.print(0, 0, id(robotomono), "TODO: Page 2");
+          it.printf(0, MIDDLE_LINE_YY, id(robotomono_title), TextAlign::TOP_LEFT, onCallRightNow ? "I am Busy" : "I am free");
+
+          //it.printf(0, BOTTOM_LINE_YY, id(robotomono_caption), TextAlign::TOP_LEFT, "Camera: %d, Mic: %d", id(active_camera).state, id(active_mic).state);
+      # - id: page2
+      #   lambda: |-
+      #     it.fill(COLOR_OFF);
+      #     //it.print(0, 0, id(robotomono_subtitle), "TODO: Page 2");
 
 # deep_sleep:
 #   id: deep_sleep_ttgo_epaper
