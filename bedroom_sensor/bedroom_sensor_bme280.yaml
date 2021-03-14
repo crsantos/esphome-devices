@@ -27,7 +27,7 @@ wifi:
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "Bme280 Fallback Hotspot"
-    password: "5HfgEQHF9Dg4"
+    password: !secret hotspot_fallback_pwd
 
 captive_portal:
 
