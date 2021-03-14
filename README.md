@@ -1,6 +1,10 @@
 # ESPHome Device Configs
 
-These are my ESPHOME device configurations
+These are my ESPHOME device configurations I use with [VSCode](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwjs-5O__6_vAhXS7eAKHeTkA2QQFjAAegQIARAE&url=https%3A%2F%2Fcode.visualstudio.com%2F&usg=AOvVaw15O90sm1ios8AUpw56hCml) and [PlatformIO](https://platformio.org).
+
+Each folder includes the `yaml` configuration file and a specific `Makefile` referring some paths of PlatformIO binaries (e.g.: `~/.platformio/penv/bin/pio`).
+
+It assumes that `secrets.yaml` is placed on each folder. I usually symlink just one file to eavery single folder.
 
 ## Bedroom Sensor 🌡
 
