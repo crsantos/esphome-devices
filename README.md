@@ -4,7 +4,7 @@ These are my ESPHOME device configurations I use with [VSCode](https://www.googl
 
 Each folder includes the `yaml` configuration file and a specific `Makefile` referring some paths of PlatformIO binaries (e.g.: `~/.platformio/penv/bin/pio`).
 
-It assumes that `secrets.yaml` is placed on each folder. I usually symlink just one file to eavery single folder.
+It assumes that you have one `secrets.yaml` file placed on each project's folder. I usually have one file on the root and symlink it to every single folder.
 
 ## Bedroom Sensor 🌡
 
