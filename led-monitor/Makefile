@@ -1,7 +1,7 @@
 YAML_PATH=led-monitor.yml
 PIO_PATH=pio
 GENERATED_CODE_PATH=.esphome/build/led-monitor/
-DEVICE=/dev/tty.usbserial-1440
+DEVICE=/dev/tty.usbserial-144320
 
 # Compile ESPHome yaml into platformIO
 compile:
