@@ -40,10 +40,10 @@ logger:
     mqtt.component: ERROR
     mqtt.client: ERROR
 
-status_led:
-  pin:
-    number: GPIO2
-    inverted: True
+# status_led:
+#   pin:
+#     number: GPIO2
+#     inverted: True
 
 api:
 

@@ -13,6 +13,9 @@ clean:
 upload:
 	esphome run ${YAML_PATH} --device ${DEVICE}
 
+logs:
+	esphome logs ${YAML_PATH} --device ${DEVICE}
+
 all: clean	compile	upload
 
 .PHONY:
