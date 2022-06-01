@@ -52,7 +52,6 @@ light:
     variant: WS2812
     pin: D3
     num_leds: 60
-    #rgb_order: GRB
     name: "LED Mirror"
     effects:
       - strobe:
