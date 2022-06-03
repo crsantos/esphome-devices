@@ -50,7 +50,7 @@ api:
 light:
   - platform: neopixelbus
     variant: WS2812
-    pin: D4
+    pin: D3
     num_leds: 60
     name: "LED Monitor"
     effects:
