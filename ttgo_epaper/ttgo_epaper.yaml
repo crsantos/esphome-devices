@@ -10,6 +10,7 @@ substitutions:
   devicename: "ttgoepaper"
   mqtt_topic_prefix: 'ttgoepaper'
   font_name: 'fonts/RobotoMono-Regular.ttf'
+  computer_name: !secret computer_name
 
 mqtt:
   broker: !secret mqtt_broker_ip
@@ -72,20 +73,22 @@ spi:
 
 binary_sensor:
   - platform: homeassistant
-    entity_id: binary_sensor.ffptn3850_camera_in_use
+    entity_id: binary_sensor.${computer_name}_camera_in_use
     id: active_camera
   - platform: homeassistant
-    entity_id: binary_sensor.ffptn3850_microphone_in_use
+    entity_id: binary_sensor.${computer_name}_audio_input_in_use
     id: active_mic
   - platform: gpio
     pin:
       number: 39
-      mode: INPUT_PULLUP
+      mode:
+        input: true
+        #pullup: true
       inverted: True
     name: "ePaper Button"
-    # on_press:
-    #   then:
-    #     - display.page.show_next: epaper_display
+    on_press:
+      then:
+        - display.page.show_next: epaper_display
 
 sensor:
   - platform: adc
@@ -99,11 +102,11 @@ sensor:
           window_size: 5
           send_every: 5
 
-# interval:
-#   - interval: 30s
-#     then:
-#       - display.page.show_next: epaper_display
-#       - component.update: epaper_display
+interval:
+  - interval: 30s
+    then:
+      - display.page.show_next: epaper_display
+      - component.update: epaper_display
 
 display:
   - platform: waveshare_epaper
@@ -131,10 +134,6 @@ display:
           // Turn the whole display off.
           it.fill(COLOR_OFF);
 
-          // it.line(0, 0, it.get_width(), 0);
-
-          // it.print(0, TOP_LINE_YY, id(robotomono_title), TextAlign::TOP_LEFT, "On a call");
-
           bool onCallRightNow = id(active_camera).state || id(active_mic).state;
 
           esphome::display::Image *targetImage = onCallRightNow ? id(video_box) : id(video_box_off);
@@ -142,11 +141,10 @@ display:
 
           it.printf(0, MIDDLE_LINE_YY, id(robotomono_title), TextAlign::TOP_LEFT, onCallRightNow ? "I am Busy" : "I am free");
 
-          //it.printf(0, BOTTOM_LINE_YY, id(robotomono_caption), TextAlign::TOP_LEFT, "Camera: %d, Mic: %d", id(active_camera).state, id(active_mic).state);
-      # - id: page2
-      #   lambda: |-
-      #     it.fill(COLOR_OFF);
-      #     //it.print(0, 0, id(robotomono_subtitle), "TODO: Page 2");
+      - id: page2
+        lambda: |-
+          it.fill(COLOR_OFF);
+          it.printf(0, MIDDLE_LINE_YY, id(robotomono_caption), TextAlign::TOP_LEFT, "Camera: %d, Mic: %d", id(active_camera).state, id(active_mic).state);
 
 # deep_sleep:
 #   id: deep_sleep_ttgo_epaper
