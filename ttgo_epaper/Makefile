@@ -4,10 +4,10 @@ GENERATED_CODE_PATH=ttgoepaper
 
 # Compile ESPHome yaml into platformIO
 compile:
-	esphome ${YAML_PATH} compile
+	esphome compile ${YAML_PATH}
 
 clean:
-	esphome ${YAML_PATH} clean
+	esphome clean ${YAML_PATH}
 
 upload:
 	${PIO_PATH} run --target upload -d ${GENERATED_CODE_PATH}
