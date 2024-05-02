@@ -38,11 +38,11 @@ font:
 image:
   - file: "images/video-box-off.png"
     id: video_box_off
-    type: RGB24
+    #type: RGB24
     #resize: 72x72
   - file: "images/video-box.png"
     id: video_box
-    type: RGB24
+    #type: RGB24
     #resize: 72x72
 
 wifi:
