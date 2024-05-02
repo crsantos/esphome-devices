@@ -38,9 +38,11 @@ font:
 image:
   - file: "images/video-box-off.png"
     id: video_box_off
+    type: RGB24
     #resize: 72x72
   - file: "images/video-box.png"
     id: video_box
+    type: RGB24
     #resize: 72x72
 
 wifi:
@@ -136,7 +138,7 @@ display:
 
           bool onCallRightNow = id(active_camera).state || id(active_mic).state;
 
-          esphome::display::Image *targetImage = onCallRightNow ? id(video_box) : id(video_box_off);
+          esphome::image::Image *targetImage = onCallRightNow ? id(video_box) : id(video_box_off);
           it.image(170, 30, targetImage);
 
           it.printf(0, MIDDLE_LINE_YY, id(robotomono_title), TextAlign::TOP_LEFT, onCallRightNow ? "I am Busy" : "I am free");
