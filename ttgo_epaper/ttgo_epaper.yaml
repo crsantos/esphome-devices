@@ -38,11 +38,9 @@ font:
 image:
   - file: "images/video-box-off.png"
     id: video_box_off
-    #type: RGB24
     #resize: 72x72
   - file: "images/video-box.png"
     id: video_box
-    #type: RGB24
     #resize: 72x72
 
 wifi:
@@ -85,8 +83,7 @@ binary_sensor:
       number: 39
       mode:
         input: true
-        #pullup: true
-      inverted: True
+      inverted: true
     name: "ePaper Button"
     on_press:
       then:
@@ -117,8 +114,9 @@ display:
     busy_pin: 4
     reset_pin: 16
     model: 2.13in-ttgo-b73
+    auto_clear_enabled: true
     update_interval: 15s
-    full_update_every: 90
+    full_update_every: 30  # optional (default:  1): 0 - never, 1 (default) - every, 2+ - throttled
     rotation: 270°
     id: epaper_display
     pages:
@@ -128,7 +126,7 @@ display:
           #define SCREEN_WIDTH 250
           #define IMAGE_SIZE 96
           #define SCREEN_HEIGHT 122
-          #define TOP_LINE_YY 0
+          #define PADDING_LEFT 10
           #define MIDDLE_LINE_YY 42
           #define BOTTOM_LINE_YY 100
           #define HORIZONTAL_OFFSET 50
@@ -141,12 +139,12 @@ display:
           esphome::image::Image *targetImage = onCallRightNow ? id(video_box) : id(video_box_off);
           it.image(170, 30, targetImage);
 
-          it.printf(0, MIDDLE_LINE_YY, id(robotomono_title), TextAlign::TOP_LEFT, onCallRightNow ? "I am Busy" : "I am free");
+          it.printf(PADDING_LEFT, MIDDLE_LINE_YY, id(robotomono_title), TextAlign::TOP_LEFT, onCallRightNow ? "I am Busy" : "I am free");
 
       - id: page2
         lambda: |-
           it.fill(COLOR_OFF);
-          it.printf(0, MIDDLE_LINE_YY, id(robotomono_caption), TextAlign::TOP_LEFT, "Camera: %d, Mic: %d", id(active_camera).state, id(active_mic).state);
+          it.printf(PADDING_LEFT, MIDDLE_LINE_YY, id(robotomono_caption), TextAlign::TOP_LEFT, "Camera: %d, Mic: %d", id(active_camera).state, id(active_mic).state);
 
 # deep_sleep:
 #   id: deep_sleep_ttgo_epaper
