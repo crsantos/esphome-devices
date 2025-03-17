@@ -10,3 +10,4 @@
 /secrets.yaml
 **/.pio/
 /.vscode/
+.DS_Store
