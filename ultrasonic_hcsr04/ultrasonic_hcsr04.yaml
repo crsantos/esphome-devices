@@ -6,10 +6,10 @@ esp8266:
 
 # Enable logging
 logger:
-  level: DEBUG
+  level: INFO
   logs:
-    mqtt.component: DEBUG
-    mqtt.client: DEBUG
+    mqtt.component: INFO
+    mqtt.client: INFO
 
 # Enable Home Assistant API
 api:
@@ -51,7 +51,7 @@ sensor:
     trigger_pin: GPIO05
     echo_pin: GPIO04
     name: "Proteu Ultrasonic Sensor"
-    update_interval: 3s
+    update_interval: 30s
     timeout: 4m
     force_update: false
     filters:
